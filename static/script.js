@@ -12,6 +12,7 @@ let start_x = 0;
 let start_y = 0;
 
 let tracking = false;
+let wait = false;
 
 (function(window, document, undefined) {
     window.onload = init;
@@ -29,11 +30,16 @@ let tracking = false;
         const canvas = document.querySelector("canvas");
 
         canvas.ontouchmove = (function(e) {
-            if (tracking) {
+            if (tracking && !wait) {
                 let c = getCursorPosition(canvas, e);
-                socket.emit("move", {x: c["x"] - start_x, y: c["y"] - start_y});
+                socket.emit("move", {x: (c["x"] - start_x)*10, y: (c["y"] - start_y)*10});
                 start_x = c["x"];
                 start_y = c["y"];
+
+                wait = true;
+                setTimeout(function() {
+                    wait = false;
+                }, 100);
             }
         });
 
